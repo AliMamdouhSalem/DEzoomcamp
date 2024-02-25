@@ -20,9 +20,8 @@ def main(params):
     
     os.system(f"wget {url} -O {csv_name}")
     engine= create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
-    engine.connect()
-
-    df_iter= pd.read_csv(csv_name, iterator=True, chunksize=100000, low_memory=False, encoding='UTF')
+ 
+    df_iter= pd.read_csv(csv_name, iterator=True, chunksize=100000, low_memory=False)
     df=next(df_iter)
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
