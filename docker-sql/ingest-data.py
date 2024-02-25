@@ -16,14 +16,18 @@ def main(params):
     db=params.db
     table_name=params.table_name
     url= params.url
+    url2= 'https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv'
     csv_name='output.csv.gz'
-    
+    csv_name2= 'output2.csv'
     os.system(f"wget {url} -O {csv_name}")
+    os.system(f"wget {url2} -O {csv_name2}")
     engine= create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
     
+    d= pd.read_csv(csv_name2)
+    d.to_sql(name="Taxi_Zone", con=engine, if_exists='replace')
     df_iter= pd.read_csv(csv_name, iterator=True, chunksize=100000, low_memory=False)
-    df=next(df_iter)
-    df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
+    #df=next(df_iter)
+    next(df_iter).head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
     while True:
         t_start= time()
